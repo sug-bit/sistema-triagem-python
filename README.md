@@ -15,4 +15,10 @@ Sou Técnico de Enfermagem na SPDM e estudante de ADS no Centro Universitário P
 - Conceito de Protocolo de Manchester
 
 ## Como rodar
+` ```bash `
 python main.py
+` ``` `
+
+## Autor
+    Gustavo - Técnico de Enfermagem | Estudante ADS - Centro Universitário Piaget
+    [https://www.linkedin.com/in/gustavo-victorino-06405b239/]
