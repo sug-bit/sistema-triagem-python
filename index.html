@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Triagem Hospitalar</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f4;--surface:#fff;--ink:#0f2a33;--mute:#5b7078;--line:#d3dde1;--brand:#0f4c5c;--on-brand:#fff;--red:#c93c3c;--yel:#d99a1c;--grn:#2f8f5f;--org:#e8710a;--blu:#2f6fba;--err:#b42318;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0b1a20;--surface:#12262e;--ink:#e6f0f3;--mute:#93aab3;--line:#26414b;--brand:#4fb3c9;--on-brand:#06242c;--err:#ff8a7a}}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Figtree,system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque",Figtree,sans-serif;margin:0;line-height:1.1}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.hide{display:none!important}
+/* login */
+.auth{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+.hero{background:var(--brand);color:var(--on-brand);padding:56px;display:flex;flex-direction:column;justify-content:space-between;gap:32px}
+.hero h1{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;max-width:11ch}
+.hero p{max-width:38ch;opacity:.9;margin:0}
+.stripes{display:flex;gap:10px}.stripes i{flex:1;height:14px;border-radius:7px}
+.stripes i:nth-child(1){background:var(--red)}.stripes i:nth-child(2){background:var(--yel)}.stripes i:nth-child(3){background:var(--grn)}
+.formwrap{display:grid;place-items:center;padding:32px}
+.card{width:100%;max-width:400px}
+.tabs{display:flex;border-bottom:2px solid var(--line);margin-bottom:24px}
+.tabs button{flex:1;background:none;border:0;padding:12px;cursor:pointer;color:var(--mute);font-weight:600;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tabs button[aria-selected=true]{color:var(--ink);border-color:var(--brand)}
+label{display:block;font-weight:600;font-size:.9rem;margin:14px 0 6px}
+input,select,textarea{width:100%;padding:11px 12px;background:var(--surface);border:1.5px solid var(--line);border-radius:8px}
+input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--err)}
+.err{color:var(--err);font-size:.85rem;min-height:1.2em;margin:4px 0 0}
+.btn{display:inline-block;width:100%;margin-top:20px;padding:12px 16px;border:0;border-radius:8px;background:var(--brand);color:var(--on-brand);font-weight:600;cursor:pointer}
+.btn.ghost{background:none;color:var(--ink);border:1.5px solid var(--line);width:auto;margin:0;padding:8px 14px}
+.formerr{color:var(--err);font-weight:600;margin-top:12px;min-height:1.4em}
+.note{color:var(--mute);font-size:.8rem;margin-top:18px}
+/* app */
+header.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 24px;background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+header.top h2{font-size:1.25rem}
+.who{display:flex;align-items:center;gap:12px;color:var(--mute);font-size:.9rem}
+main{display:grid;grid-template-columns:340px 1fr;gap:24px;padding:24px;max-width:1100px;margin:0 auto}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;align-self:start}
+.panel h3{font-size:1.2rem;margin-bottom:4px}
+.prio{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:8px;margin-top:6px}
+.prio label{margin:0;font-weight:600;cursor:pointer}
+.prio input{position:absolute;opacity:0;width:1px;height:1px}
+.prio span{display:block;text-align:center;padding:10px 4px;border:2px solid var(--line);border-radius:8px;font-size:.85rem}
+.prio input:checked+span{color:#fff;border-color:transparent}
+.prio .r input:checked+span{background:var(--red)}.prio .o input:checked+span{background:var(--org)}.prio .y input:checked+span{background:var(--yel)}.prio .g input:checked+span{background:var(--grn)}.prio .b input:checked+span{background:var(--blu)}
+.prio input:focus-visible+span{outline:3px solid var(--brand);outline-offset:2px}
+.hint{color:var(--mute);font-size:.8rem;margin-top:6px}
+.qhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap}
+.stats{display:flex;flex-wrap:wrap;gap:16px;color:var(--mute);font-size:.9rem;margin-bottom:16px}
+.stats b{color:var(--ink)}
+ol{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.pt{display:grid;grid-template-columns:8px 1fr auto;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px 12px 0;overflow:hidden}
+.pt::before{content:"";align-self:stretch;background:var(--c)}
+.pt.VERMELHO{--c:var(--red)}.pt.LARANJA{--c:var(--org)}.pt.AZUL{--c:var(--blu)}.pt.AMARELO{--c:var(--yel)}.pt.VERDE{--c:var(--grn)}
+.pt strong{display:block}.pt small{color:var(--mute)}
+.pt .tag{font-weight:600;font-size:.8rem;color:var(--c)}
+.pt button{background:none;border:1.5px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer}
+.empty{padding:32px;text-align:center;color:var(--mute);border:2px dashed var(--line);border-radius:12px}
+.called{margin-top:20px;color:var(--mute);font-size:.9rem}
+@media (max-width:820px){.auth{grid-template-columns:1fr}.hero{padding:32px 24px}main{grid-template-columns:1fr;padding:16px}}
+</style>
+</head>
+<body>
+
+<section id="auth" class="auth">
+  <div class="hero">
+    <div class="stripes" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div>
+      <h1>Quem precisa de atenção primeiro?</h1>
+      <p>Cadastre pacientes, classifique o risco e acompanhe a fila de atendimento por prioridade, inspirada no Protocolo de Manchester.</p>
+    </div>
+    <p>Projeto de Gustavo Victorino: técnico de enfermagem em transição para TI.</p>
+  </div>
+  <div class="formwrap"><div class="card">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-login" aria-selected="true">Entrar</button>
+      <button role="tab" id="tab-reg" aria-selected="false">Criar conta</button>
+    </div>
+    <form id="f-login" novalidate>
+      <label for="l-email">E-mail</label><input id="l-email" type="email" autocomplete="email">
+      <p class="err" data-for="l-email"></p>
+      <label for="l-pass">Senha</label><input id="l-pass" type="password" autocomplete="current-password">
+      <p class="err" data-for="l-pass"></p>
+      <button class="btn" type="submit">Entrar</button>
+      <p class="formerr" role="alert" id="l-err"></p>
+    </form>
+    <form id="f-reg" class="hide" novalidate>
+      <label for="r-nome">Nome completo</label><input id="r-nome" autocomplete="name">
+      <p class="err" data-for="r-nome"></p>
+      <label for="r-email">E-mail</label><input id="r-email" type="email" autocomplete="email">
+      <p class="err" data-for="r-email"></p>
+      <label for="r-pass">Senha</label><input id="r-pass" type="password" autocomplete="new-password">
+      <p class="err" data-for="r-pass"></p>
+      <label for="r-pass2">Confirmar senha</label><input id="r-pass2" type="password" autocomplete="new-password">
+      <p class="err" data-for="r-pass2"></p>
+      <button class="btn" type="submit">Criar conta</button>
+      <p class="formerr" role="alert" id="r-err"></p>
+    </form>
+    <p class="note">Demonstração de portfólio: contas e pacientes ficam salvos apenas neste navegador. As senhas são guardadas com hash SHA-256 e salt. Não cadastre dados reais de pacientes.</p>
+  </div></div>
+</section>
+
+<section id="app" class="hide">
+  <header class="top">
+    <h2>Triagem Hospitalar</h2>
+    <div class="who"><span id="who"></span><button class="btn ghost" id="logout">Sair</button></div>
+  </header>
+  <main>
+    <form class="panel" id="f-pt" novalidate>
+      <h3>Novo paciente</h3>
+      <label for="p-nome">Nome</label><input id="p-nome">
+      <p class="err" data-for="p-nome"></p>
+      <label for="p-idade">Idade</label><input id="p-idade" type="number" inputmode="numeric" min="0" max="120">
+      <p class="err" data-for="p-idade"></p>
+      <label for="p-queixa">Queixa principal</label><input id="p-queixa" maxlength="80">
+      <p class="err" data-for="p-queixa"></p>
+      <fieldset style="border:0;padding:0;margin:14px 0 0">
+        <legend style="font-weight:600;font-size:.9rem">Classificação de risco</legend>
+        <div class="prio">
+          <label class="r"><input type="radio" name="prio" value="VERMELHO"><span>Vermelho</span></label>
+          <label class="o"><input type="radio" name="prio" value="LARANJA"><span>Laranja</span></label>
+          <label class="y"><input type="radio" name="prio" value="AMARELO"><span>Amarelo</span></label>
+          <label class="g"><input type="radio" name="prio" value="VERDE"><span>Verde</span></label>
+          <label class="b"><input type="radio" name="prio" value="AZUL"><span>Azul</span></label></div>
+        <p class="hint">Vermelho: emergência, atendimento imediato. Laranja: muito urgente, até 10 min. Amarelo: urgente, até 60 min. Verde: pouco urgente, até 120 min. Azul: não urgente, até 240 min.</p>
+        <p class="err" data-for="prio"></p>
+      </fieldset>
+      <button class="btn" type="submit">Adicionar à fila</button>
+    </form>
+    <div>
+      <div class="qhead"><h3>Fila de atendimento</h3><button class="btn ghost" id="next">Chamar próximo</button></div>
+      <div class="stats" id="stats"></div>
+      <ol id="queue"></ol>
+      <p class="called" id="called"></p>
+    </div>
+  </main>
+</section>
+
+<script>
+const $=s=>document.querySelector(s), META={VERMELHO:["Emergência",0],LARANJA:["Muito urgente",10],AMARELO:["Urgente",60],VERDE:["Pouco urgente",120],AZUL:["Não urgente",240]},ORDEM=Object.fromEntries(Object.keys(META).map((k,i)=>[k,i]));
+const store={
+  get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+let mem={users:{},session:null}; // fallback se o storage estiver bloqueado
+const users=()=>store.get("tri_users",mem.users);
+const saveUsers=u=>{mem.users=u;store.set("tri_users",u)};
+let session=store.get("tri_session",null)||mem.session, data={fila:[],chamados:[]};
+
+async function hash(pw,salt){
+  const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(salt+pw));
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+const salt=()=>[...crypto.getRandomValues(new Uint8Array(12))].map(x=>x.toString(16).padStart(2,"0")).join("");
+
+/* validação */
+function setErr(id,msg){
+  const p=document.querySelector(`[data-for="${id}"]`),i=document.getElementById(id);
+  if(p)p.textContent=msg||""; if(i)i.setAttribute("aria-invalid",msg?"true":"false");
+  return !msg;
+}
+const check=(rules)=>rules.map(([id,msg])=>setErr(id,msg)).every(Boolean);
+const emailOk=v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+
+/* abas */
+function tab(login){
+  $("#f-login").classList.toggle("hide",!login);$("#f-reg").classList.toggle("hide",login);
+  $("#tab-login").setAttribute("aria-selected",login);$("#tab-reg").setAttribute("aria-selected",!login);
+}
+$("#tab-login").onclick=()=>tab(true);$("#tab-reg").onclick=()=>tab(false);
+
+/* cadastro */
+$("#f-reg").onsubmit=async e=>{
+  e.preventDefault();
+  const nome=$("#r-nome").value.trim(),email=$("#r-email").value.trim().toLowerCase(),p=$("#r-pass").value,p2=$("#r-pass2").value;
+  const ok=check([
+    ["r-nome",nome.split(/\s+/).filter(Boolean).length<2?"Informe nome e sobrenome.":""],
+    ["r-email",emailOk(email)?"":"Digite um e-mail válido, como nome@exemplo.com."],
+    ["r-pass",p.length<8||!/[A-Za-z]/.test(p)||!/\d/.test(p)?"Use 8 caracteres ou mais, com letras e números.":""],
+    ["r-pass2",p!==p2?"As senhas não são iguais.":""]
+  ]);
+  if(!ok)return;
+  const u=users();
+  if(u[email]){$("#r-err").textContent="Já existe uma conta com esse e-mail. Entre ou use outro e-mail.";return}
+  const s=salt();u[email]={nome,salt:s,hash:await hash(p,s)};saveUsers(u);
+  $("#r-err").textContent="";startSession(email);
+};
+
+/* login */
+$("#f-login").onsubmit=async e=>{
+  e.preventDefault();
+  const email=$("#l-email").value.trim().toLowerCase(),p=$("#l-pass").value;
+  if(!check([["l-email",emailOk(email)?"":"Digite um e-mail válido."],["l-pass",p?"":"Digite sua senha."]]))return;
+  const u=users()[email];
+  if(!u||await hash(p,u.salt)!==u.hash){$("#l-err").textContent="E-mail ou senha incorretos.";return}
+  $("#l-err").textContent="";startSession(email);
+};
+
+function startSession(email){
+  session=email;mem.session=email;store.set("tri_session",email);
+  data=store.get("tri_data_"+email,{fila:[],chamados:[]});
+  $("#who").textContent=users()[email].nome;
+  $("#auth").classList.add("hide");$("#app").classList.remove("hide");render();
+}
+$("#logout").onclick=()=>{
+  session=null;mem.session=null;store.set("tri_session",null);
+  $("#app").classList.add("hide");$("#auth").classList.remove("hide");
+  document.querySelectorAll("#auth input").forEach(i=>i.value="");
+};
+const persist=()=>store.set("tri_data_"+session,data);
+
+/* pacientes */
+$("#f-pt").onsubmit=e=>{
+  e.preventDefault();
+  const nome=$("#p-nome").value.trim(),idade=$("#p-idade").value,queixa=$("#p-queixa").value.trim();
+  const pr=document.querySelector('input[name="prio"]:checked');
+  const n=Number(idade);
+  const ok=check([
+    ["p-nome",nome.length<3?"Informe o nome do paciente (mínimo 3 letras).":""],
+    ["p-idade",idade===""||!Number.isInteger(n)||n<0||n>120?"Informe uma idade entre 0 e 120.":""],
+    ["p-queixa",queixa.length<3?"Descreva a queixa principal.":""],
+    ["prio",pr?"":"Escolha a classificação de risco."]
+  ]);
+  if(!ok)return;
+  data.fila.push({id:Date.now(),nome,idade:n,queixa,prioridade:pr.value,chegada:Date.now()});
+  persist();e.target.reset();render();$("#p-nome").focus();
+};
+
+const sorted=()=>[...data.fila].sort((a,b)=>ORDEM[a.prioridade]-ORDEM[b.prioridade]||a.chegada-b.chegada);
+$("#next").onclick=()=>{
+  const p=sorted()[0];if(!p)return;
+  data.fila=data.fila.filter(x=>x.id!==p.id);data.chamados.push({nome:p.nome,prioridade:p.prioridade});
+  persist();render();
+};
+
+function render(){
+  const f=sorted(),q=$("#queue");q.replaceChildren();
+  $("#next").disabled=!f.length;
+  const cont=c=>f.filter(p=>p.prioridade===c).length;
+  $("#stats").innerHTML=`<span>Na fila: <b>${f.length}</b></span>`+Object.keys(META).map(k=>`<span>${k[0]+k.slice(1).toLowerCase()}: <b>${cont(k)}</b></span>`).join("");
+  if(!f.length){const d=document.createElement("div");d.className="empty";d.textContent="A fila está vazia. Cadastre o primeiro paciente no formulário.";q.append(d)}
+  f.forEach(p=>{
+    const li=document.createElement("li");li.className="pt "+p.prioridade;
+    const info=document.createElement("div");
+    const s=document.createElement("strong");s.textContent=p.nome+" ("+p.idade+" anos)";
+    const sm=document.createElement("small");sm.textContent=p.queixa+" · chegou às "+new Date(p.chegada).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+    const t=document.createElement("span");t.className="tag";t.textContent=p.prioridade+" · "+META[p.prioridade][0]+" · meta "+(META[p.prioridade][1]?"até "+META[p.prioridade][1]+" min":"imediato");
+    info.append(s,sm);
+    const b=document.createElement("button");b.textContent="Remover";b.setAttribute("aria-label","Remover "+p.nome);
+    b.onclick=()=>{data.fila=data.fila.filter(x=>x.id!==p.id);persist();render()};
+    const side=document.createElement("div");side.style.cssText="display:grid;gap:6px;justify-items:end";side.append(t,b);
+    li.append(info,side);q.append(li);
+  });
+  const c=data.chamados;
+  $("#called").textContent=c.length?"Último chamado: "+c[c.length-1].nome+" ("+c[c.length-1].prioridade+"). Total atendidos: "+c.length+".":"";
+}
+
+if(session&&users()[session])startSession(session);
+</script>
+</body>
+</html>
